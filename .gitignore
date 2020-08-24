@@ -1,0 +1,6 @@
+.vscode/**
+.vs/**
+Libs/**
+HoverStats/bin/**
+HoverStats/obj/**
+HoverStats/Properties/**
