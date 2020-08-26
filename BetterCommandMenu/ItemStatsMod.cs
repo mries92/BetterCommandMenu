@@ -1,10 +1,6 @@
-﻿using IL.RoR2.UI.LogBook;
-using ItemStats;
+﻿using ItemStats;
 using RoR2;
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace HoverStats
 {
