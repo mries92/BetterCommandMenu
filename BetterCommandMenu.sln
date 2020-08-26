@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HoverStats", "HoverStats\HoverStats.csproj", "{A0660B7E-5FB1-4399-8503-6F81517D6B09}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BetterCommandMenu", "BetterCommandMenu\BetterCommandMenu.csproj", "{07095AA7-6E31-41F9-A326-E9E83E463C3F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A0660B7E-5FB1-4399-8503-6F81517D6B09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A0660B7E-5FB1-4399-8503-6F81517D6B09}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A0660B7E-5FB1-4399-8503-6F81517D6B09}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A0660B7E-5FB1-4399-8503-6F81517D6B09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07095AA7-6E31-41F9-A326-E9E83E463C3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07095AA7-6E31-41F9-A326-E9E83E463C3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07095AA7-6E31-41F9-A326-E9E83E463C3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07095AA7-6E31-41F9-A326-E9E83E463C3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {332FE1ED-3E96-4CE2-9948-1DCBB79FA085}
+		SolutionGuid = {E026F2EB-496B-4B18-B327-BB524823C85E}
 	EndGlobalSection
 EndGlobal
