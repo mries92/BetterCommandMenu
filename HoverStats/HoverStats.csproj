@@ -11,6 +11,9 @@
     <Reference Include="BepInEx">
       <HintPath>..\Libs\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="ItemStats">
+      <HintPath>..\Libs\ItemStats.dll</HintPath>
+    </Reference>
     <Reference Include="MMHOOK_Assembly-CSharp">
       <HintPath>..\Libs\MMHOOK_Assembly-CSharp.dll</HintPath>
     </Reference>

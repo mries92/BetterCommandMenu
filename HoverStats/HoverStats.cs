@@ -5,11 +5,15 @@ using System.Collections.ObjectModel;
 using R2API.Utils;
 using TMPro;
 using UnityEngine;
+using ItemStats;
+using System;
+using R2API;
 
 namespace HoverStats
 {
     [BepInPlugin("org.mries.hoverstats", "HoverStats", "1.0.0")]
     [BepInProcess("Risk of Rain 2.exe")]
+    [BepInDependency("ontrigger-ItemStatsMod-1.5.0", BepInDependency.DependencyFlags.SoftDependency)]
     public class HoverStats : BaseUnityPlugin
     {
         AssetBundle bundle;
@@ -20,7 +24,7 @@ namespace HoverStats
         }
 
         public void SetPickupOptions(On.RoR2.UI.PickupPickerPanel.orig_SetPickupOptions orig, RoR2.UI.PickupPickerPanel self, RoR2.PickupPickerController.Option[] options)
-        {
+        {            
             orig(self, options);
             var allocator = self.GetFieldValue<UIElementAllocator<MPButton>>("buttonAllocator");
             ReadOnlyCollection<MPButton> buttons = allocator.elements;
@@ -41,10 +45,14 @@ namespace HoverStats
                 var edef = EquipmentCatalog.GetEquipmentDef(def.equipmentIndex);
                 if (idef != null)
                 {
+                    int count = inv.GetItemCount(def.itemIndex);
                     content.titleColor = def.darkColor;
                     content.titleToken = idef.nameToken;
-                    content.bodyToken = idef.descriptionToken;
-                    mesh.SetText(inv.GetItemCount(def.itemIndex).ToString());
+                    if (ItemStatsMod.enabled)
+                        content.overrideBodyText = ItemStatsMod.GetDescription(idef, count);
+                    else
+                        content.bodyToken = idef.descriptionToken;
+                    mesh.SetText(count.ToString());
                 }
                 else
                 {
