@@ -6,11 +6,11 @@ using R2API.Utils;
 using TMPro;
 using UnityEngine;
 
-namespace BetterCommandMenu
+namespace HoverStats
 {
     [BepInPlugin("org.mries.hoverstats", "HoverStats", "1.0.0")]
     [BepInProcess("Risk of Rain 2.exe")]
-    public class BetterCommandMenu : BaseUnityPlugin
+    public class HoverStats : BaseUnityPlugin
     {
         AssetBundle bundle;
         void Awake()

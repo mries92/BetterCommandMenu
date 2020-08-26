@@ -1,6 +1,6 @@
 .vscode/**
 .vs/**
 Libs/**
-BetterCommandMenu/bin/**
-BetterCommandMenu/obj/**
-BetterCommandMenu/Properties/**
+HoverStats/bin/**
+HoverStats/obj/**
+HoverStats/Properties/**
