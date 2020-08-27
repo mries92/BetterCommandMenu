@@ -14,7 +14,7 @@ namespace HoverStats
     [BepInDependency("ontrigger-ItemStatsMod-1.5.0", BepInDependency.DependencyFlags.SoftDependency)]
     public class BetterCommandMenu : BaseUnityPlugin
     {
-        public const string ModGuid = "org.mries.BetterCommandMenu";
+        public const string ModGuid = "org.mries92.BetterCommandMenu";
         ConfigFile configFile;
 
         ConfigEntry<bool> tooltipEnabled_, stackTextEnabled_;
