@@ -6,10 +6,11 @@ using R2API.Utils;
 using TMPro;
 using UnityEngine;
 using BepInEx.Configuration;
+using System;
 
 namespace HoverStats
 {
-    [BepInPlugin(ModGuid, "BetterCommandMenu", "1.0.0")]
+    [BepInPlugin(ModGuid, "BetterCommandMenu", "1.0.1")]
     [BepInProcess("Risk of Rain 2.exe")]
     [BepInDependency("ontrigger-ItemStatsMod-1.5.0", BepInDependency.DependencyFlags.SoftDependency)]
     public class BetterCommandMenu : BaseUnityPlugin
@@ -62,7 +63,7 @@ namespace HoverStats
                 var def = PickupCatalog.GetPickupDef(options[i].pickupIndex);
                 var idef = ItemCatalog.GetItemDef(def.itemIndex);
                 var edef = EquipmentCatalog.GetEquipmentDef(def.equipmentIndex);
-                int count = inv.GetItemCount(def.itemIndex);
+                int count = 0;
 
                 // Add the item count text
                 GameObject gameObject = new GameObject("CommandCounter" + i);
@@ -79,8 +80,19 @@ namespace HoverStats
                 rectTransform.localScale = Vector3.one;
                 rectTransform.sizeDelta = Vector2.zero;
 
-                text.text = count.ToString();
-                switch(fontSize_.Value)
+                if(idef != null)
+                {
+                    count = inv.GetItemCount(def.itemIndex);
+                    text.text = count.ToString();
+                }
+                else
+                {
+                    text.text = "";
+                }
+                    
+
+
+                switch (fontSize_.Value)
                 {
                     case "s":
                         text.fontSize = 16;
@@ -135,14 +147,12 @@ namespace HoverStats
                             content.overrideBodyText = ItemStatsMod.GetDescription(idef, count);
                         else
                             content.bodyToken = idef.descriptionToken;
-                        text.text = count.ToString();
                     }
                     else
                     {
                         content.titleColor = def.darkColor;
                         content.titleToken = edef.nameToken;
                         content.bodyToken = edef.descriptionToken;
-                        text.enabled = false;
                     }
                     button.gameObject.AddComponent<TooltipProvider>().SetContent(content);
                 }
