@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MonoMod.Utils" Version="20.8.3.5" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\Libs\Assembly-CSharp.dll</HintPath>
     </Reference>
@@ -19,6 +23,9 @@
     </Reference>
     <Reference Include="R2API">
       <HintPath>..\Libs\R2API.dll</HintPath>
+    </Reference>
+    <Reference Include="Rewired_Core">
+      <HintPath>..\Libs\Rewired_Core.dll</HintPath>
     </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>..\Libs\Unity.TextMeshPro.dll</HintPath>

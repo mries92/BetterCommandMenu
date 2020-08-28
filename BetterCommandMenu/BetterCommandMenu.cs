@@ -7,6 +7,11 @@ using TMPro;
 using UnityEngine;
 using BepInEx.Configuration;
 using System;
+using UnityEngine.EventSystems;
+using System.Reflection;
+using System.Collections.Generic;
+using MonoMod.Cil;
+using Mono.Cecil.Cil;
 
 namespace HoverStats
 {
@@ -16,37 +21,38 @@ namespace HoverStats
     public class BetterCommandMenu : BaseUnityPlugin
     {
         public const string ModGuid = "org.mries92.BetterCommandMenu";
-        ConfigFile configFile;
-
-        ConfigEntry<bool> tooltipEnabled_, stackTextEnabled_;
-        ConfigEntry<string> fontSize_, alignment_;
+        ConfigFile configFile_;
+        ConfigEntry<bool> tooltipEnabled_, stackTextEnabled_, closeWithEscape_;
+        ConfigEntry<string> alignment_, prefix_;
+        ConfigEntry<int> fontSize_;
+        IntPtr eventUpdatePointer_; 
 
         void Awake()
         {
-            On.RoR2.UI.PickupPickerPanel.SetPickupOptions += SetPickupOptions;
-            // Create config
             CreateSettingsFile();
+            eventUpdatePointer_ = typeof(EventSystem).GetMethod("Update", BindingFlags.Instance | BindingFlags.NonPublic).MethodHandle.GetFunctionPointer();
+            On.RoR2.UI.PickupPickerPanel.SetPickupOptions += SetPickupOptions;
         }
 
         public void CreateSettingsFile()
         {
-            string fontSize = "m";
+            int fontSize = 24;
+            string prefix = "";
             bool tooltipEnabled = true;
             bool stackTextEnabled = true;
+            bool closeWithEscape = true;
             string alignment = "br";
 
             string[] acceptableSizeValues = { "s", "m", "l" };
             string[] acceptableAlignmentValues = { "br", "bl", "tr", "tl", "c" };
 
-            configFile = new ConfigFile(System.IO.Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
-            AcceptableValueList<string> acceptableValueList = new AcceptableValueList<string>(acceptableSizeValues);
-            ConfigDescription description = new ConfigDescription("How big should the text be", acceptableValueList);
-            fontSize_ = configFile.Bind<string>("main", "fontSize", fontSize, description);
-            tooltipEnabled_ = configFile.Bind<bool>("main", "tooltipEnabled", tooltipEnabled);
-            stackTextEnabled_ = configFile.Bind<bool>("main", "stackTextEnabled", stackTextEnabled);
-            acceptableValueList = new AcceptableValueList<string>(acceptableAlignmentValues);
-            description = new ConfigDescription("Where should the text be positioned on the buttons", acceptableValueList);
-            alignment_ = configFile.Bind<string>("main", "alignment", alignment, description);
+            configFile_ = new ConfigFile(System.IO.Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
+            fontSize_ = configFile_.Bind<int>("main", "fontSize", fontSize, new ConfigDescription("How big should the text be"));
+            prefix_ = configFile_.Bind<string>("main", "prefix", prefix, new ConfigDescription("The text that should prefix the item count (eg. 'x' for 'x3')"));
+            tooltipEnabled_ = configFile_.Bind<bool>("main", "tooltipEnabled", tooltipEnabled, new ConfigDescription("Should tooltips be enabled in the command menu"));
+            stackTextEnabled_ = configFile_.Bind<bool>("main", "stackTextEnabled", stackTextEnabled, new ConfigDescription("Should item counters be shown in the command menu"));
+            closeWithEscape_ = configFile_.Bind<bool>("main", "closeWithEscape", closeWithEscape, new ConfigDescription("Should escape close the command menu (instead of pausing)"));
+            alignment_ = configFile_.Bind<string>("main", "alignment", alignment, new ConfigDescription("Where should the text be positioned on the buttons (bl - bottom left, tr - top right, etc.)", new AcceptableValueList<string>(acceptableAlignmentValues)));
         }
 
         public void SetPickupOptions(On.RoR2.UI.PickupPickerPanel.orig_SetPickupOptions orig, RoR2.UI.PickupPickerPanel self, RoR2.PickupPickerController.Option[] options)
@@ -64,78 +70,65 @@ namespace HoverStats
                 var idef = ItemCatalog.GetItemDef(def.itemIndex);
                 var edef = EquipmentCatalog.GetEquipmentDef(def.equipmentIndex);
                 int count = 0;
-
-                // Add the item count text
-                GameObject gameObject = new GameObject("CommandCounter" + i);
-                gameObject.transform.parent = button.transform;
-                gameObject.AddComponent<CanvasRenderer>();
-
-                RectTransform rectTransform = gameObject.AddComponent<RectTransform>();
-                HGTextMeshProUGUI text = gameObject.AddComponent<HGTextMeshProUGUI>();
-
-                text.enableWordWrapping = false;
-                rectTransform.localPosition = Vector2.zero;
-                rectTransform.anchorMin = Vector2.zero;
-                rectTransform.anchorMax = Vector2.one;
-                rectTransform.localScale = Vector3.one;
-                rectTransform.sizeDelta = Vector2.zero;
-
-                if(idef != null)
+                
+                // Stack text
+                if(stackTextEnabled_.Value)
                 {
-                    count = inv.GetItemCount(def.itemIndex);
-                    text.text = count.ToString();
-                }
-                else
-                {
+                    GameObject anchorObject = new GameObject("CommandCounter" + i);
+                    anchorObject.transform.parent = button.transform;
+                    anchorObject.AddComponent<CanvasRenderer>();
+                    RectTransform rectTransform = anchorObject.AddComponent<RectTransform>();
+                    HGTextMeshProUGUI text = anchorObject.AddComponent<HGTextMeshProUGUI>();
+
+                    text.enableWordWrapping = false;
                     text.text = "";
-                }
-                    
+                    text.color = Color.white;
+                    rectTransform.localPosition = Vector2.zero;
+                    rectTransform.anchorMin = Vector2.zero;
+                    rectTransform.anchorMax = Vector2.one;
+                    rectTransform.localScale = Vector3.one;
+                    rectTransform.sizeDelta = Vector2.zero;
 
+                    // Item count text
+                    text.fontSize = fontSize_.Value;
+                    if (idef != null)
+                    {
+                        count = inv.GetItemCount(def.itemIndex);
+                        text.text = String.Format("<size={0}>{1}</size>{2}", text.fontSize / 2, prefix_.Value, count);
+                    }
 
-                switch (fontSize_.Value)
-                {
-                    case "s":
-                        text.fontSize = 16;
-                        break;
-                    case "m":
-                        text.fontSize = 24;
-                        break;
-                    case "l":
-                        text.fontSize = 32;
-                        break;
-                    default:
-                        break;
-                }
-                text.color = Color.white;
-                switch(alignment_.Value)
-                {
-                    case "br":
-                        text.alignment = TextAlignmentOptions.BottomRight;
-                        rectTransform.anchoredPosition = new Vector2(-5, 2);
-                        break;
-                    case "bl":
-                        text.alignment = TextAlignmentOptions.BottomLeft;
-                        rectTransform.anchoredPosition = new Vector2(5, 2);
-                        break;
-                    case "tr":
-                        rectTransform.anchoredPosition = new Vector2(-5, 0);
-                        text.alignment = TextAlignmentOptions.TopRight;
-                        break;
-                    case "tl":
-                        rectTransform.anchoredPosition = new Vector2(5, 0);
-                        text.alignment = TextAlignmentOptions.TopLeft;
-                        break;
-                    case "c":
-                        rectTransform.anchoredPosition = new Vector2(0, 0);
-                        text.alignment = TextAlignmentOptions.Center;
-                        break;
-                    default:
-                        text.alignment = TextAlignmentOptions.BottomRight;
-                        rectTransform.anchoredPosition = new Vector2(-5, 2);
-                        break;
+                    // Item count alignment
+                    switch (alignment_.Value)
+                    {
+                        case "br":
+                            text.alignment = TextAlignmentOptions.BottomRight;
+                            rectTransform.anchoredPosition = new Vector2(-5, 2);
+                            break;
+                        case "bl":
+                            text.alignment = TextAlignmentOptions.BottomLeft;
+                            rectTransform.anchoredPosition = new Vector2(5, 2);
+                            break;
+                        case "tr":
+                            rectTransform.anchoredPosition = new Vector2(-5, 0);
+                            text.alignment = TextAlignmentOptions.TopRight;
+                            break;
+                        case "tl":
+                            rectTransform.anchoredPosition = new Vector2(5, 0);
+                            text.alignment = TextAlignmentOptions.TopLeft;
+                            break;
+                        case "c":
+                            rectTransform.anchoredPosition = new Vector2(0, 0);
+                            text.alignment = TextAlignmentOptions.Center;
+                            break;
+                        default:
+                            text.alignment = TextAlignmentOptions.BottomRight;
+                            rectTransform.anchoredPosition = new Vector2(-5, 2);
+                            break;
+                    }
                 }
                 
-
+                
+                // Tooltips
                 if (tooltipEnabled_.Value)
                 {
                     TooltipContent content = new TooltipContent();
