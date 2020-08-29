@@ -14,23 +14,19 @@ using MonoMod.Cil;
 using Mono.Cecil.Cil;
 using MonoMod.Utils;
 using MonoMod.Utils.Cil;
+using BetterCommandMenu;
 
 namespace HoverStats
 {
-    [BepInPlugin(ModGuid, "BetterCommandMenu", "1.0.1")]
+    [BepInPlugin(modGuid, "BetterCommandMenu", "1.0.1")]
     [BepInProcess("Risk of Rain 2.exe")]
     [BepInDependency("ontrigger-ItemStatsMod-1.5.0", BepInDependency.DependencyFlags.SoftDependency)]
     public class BetterCommandMenu : BaseUnityPlugin
     {
-        public const string ModGuid = "org.mries92.BetterCommandMenu";
-        ConfigFile configFile_;
-        ConfigEntry<bool> tooltipEnabled_, stackTextEnabled_, closeWithEscape_;
-        ConfigEntry<string> alignment_, prefix_;
-        ConfigEntry<int> fontSize_;
-
+        public const string modGuid = "org.mries92.BetterCommandMenu";
         void Awake()
         {
-            CreateSettingsFile();
+            SettingsManager.Init();
             On.RoR2.UI.PickupPickerPanel.SetPickupOptions += SetPickupOptions;
             IL.RoR2.UI.MPEventSystem.Update += (il) =>
             {
@@ -41,49 +37,23 @@ namespace HoverStats
                 c.Emit(OpCodes.Ldarg_0);
                 c.EmitDelegate<Action<MPEventSystem>>((eventSystem) =>
                 {
-                    if (closeWithEscape_.Value == true)
+                    if (SettingsManager.closeWithEscape.Value == true)
                     {
                         PickupPickerPanel[] panels = (PickupPickerPanel[])FindObjectsOfType(typeof(PickupPickerPanel));
                         if (panels.Length > 0)
-                        {
                             foreach (var panel in panels)
                                 Destroy(panel.gameObject);
-                        }
                         else
-                        {
                             RoR2.Console.instance.SubmitCmd(null, "pause");
-                        }
                     }
                     else
-                    {
                         RoR2.Console.instance.SubmitCmd(null, "pause");
-                    }
                 });
                 c.Emit(OpCodes.Ret);
                 c.GotoPrev(x => x.MatchBrfalse(out _));
                 c.Next.Operand = label;
                 c.Next.OpCode = OpCodes.Brfalse;
             };
-        }
-
-        public void CreateSettingsFile()
-        {
-            int fontSize = 24;
-            string prefix = "";
-            bool tooltipEnabled = true;
-            bool stackTextEnabled = true;
-            bool closeWithEscape = true;
-            string alignment = "br";
-
-            string[] acceptableAlignmentValues = { "br", "bl", "tr", "tl", "c" };
-
-            configFile_ = new ConfigFile(System.IO.Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
-            fontSize_ = configFile_.Bind<int>("main", "fontSize", fontSize, new ConfigDescription("How big should the text be"));
-            prefix_ = configFile_.Bind<string>("main", "prefix", prefix, new ConfigDescription("The text that should prefix the item count (eg. 'x' for 'x3')"));
-            tooltipEnabled_ = configFile_.Bind<bool>("main", "tooltipEnabled", tooltipEnabled, new ConfigDescription("Should tooltips be enabled in the command menu"));
-            stackTextEnabled_ = configFile_.Bind<bool>("main", "stackTextEnabled", stackTextEnabled, new ConfigDescription("Should item counters be shown in the command menu"));
-            closeWithEscape_ = configFile_.Bind<bool>("main", "closeWithEscape", closeWithEscape, new ConfigDescription("Should escape close the command menu (instead of pausing)"));
-            alignment_ = configFile_.Bind<string>("main", "alignment", alignment, new ConfigDescription("Where should the text be positioned on the buttons (bl - bottom left, tr - top right, etc.)", new AcceptableValueList<string>(acceptableAlignmentValues)));
         }
 
         public void SetPickupOptions(On.RoR2.UI.PickupPickerPanel.orig_SetPickupOptions orig, RoR2.UI.PickupPickerPanel self, RoR2.PickupPickerController.Option[] options)
@@ -103,7 +73,7 @@ namespace HoverStats
                 int count = 0;
                 
                 // Stack text
-                if(stackTextEnabled_.Value)
+                if(SettingsManager.stackTextEnabled.Value)
                 {
                     GameObject anchorObject = new GameObject("CommandCounter" + i);
                     anchorObject.transform.parent = button.transform;
@@ -121,15 +91,18 @@ namespace HoverStats
                     rectTransform.sizeDelta = Vector2.zero;
 
                     // Item count text
-                    text.fontSize = fontSize_.Value;
+                    text.fontSize = SettingsManager.fontSize.Value;
+                    text.color = SettingsManager.fontColor.Value;
+                    text.outlineColor = SettingsManager.borderColor.Value;
+                    text.outlineWidth = SettingsManager.borderSize.Value;
                     if (idef != null)
                     {
                         count = inv.GetItemCount(def.itemIndex);
-                        text.text = String.Format("<size={0}>{1}</size>{2}", text.fontSize / 2, prefix_.Value, count);
+                        text.text = String.Format("<size={0}>{1}</size>{2}", text.fontSize / 2, SettingsManager.prefix.Value, count);
                     }
 
                     // Item count alignment
-                    switch (alignment_.Value)
+                    switch (SettingsManager.alignment.Value)
                     {
                         case "br":
                             text.alignment = TextAlignmentOptions.BottomRight;
@@ -160,7 +133,7 @@ namespace HoverStats
                 
                 
                 // Tooltips
-                if (tooltipEnabled_.Value)
+                if (SettingsManager.tooltipEnabled.Value)
                 {
                     TooltipContent content = new TooltipContent();
                     if (idef != null)
