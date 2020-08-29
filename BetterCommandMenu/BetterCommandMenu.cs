@@ -12,6 +12,8 @@ using System.Reflection;
 using System.Collections.Generic;
 using MonoMod.Cil;
 using Mono.Cecil.Cil;
+using MonoMod.Utils;
+using MonoMod.Utils.Cil;
 
 namespace HoverStats
 {
@@ -25,13 +27,43 @@ namespace HoverStats
         ConfigEntry<bool> tooltipEnabled_, stackTextEnabled_, closeWithEscape_;
         ConfigEntry<string> alignment_, prefix_;
         ConfigEntry<int> fontSize_;
-        IntPtr eventUpdatePointer_; 
 
         void Awake()
         {
             CreateSettingsFile();
-            eventUpdatePointer_ = typeof(EventSystem).GetMethod("Update", BindingFlags.Instance | BindingFlags.NonPublic).MethodHandle.GetFunctionPointer();
             On.RoR2.UI.PickupPickerPanel.SetPickupOptions += SetPickupOptions;
+            IL.RoR2.UI.MPEventSystem.Update += (il) =>
+            {
+                ILCursor c = new ILCursor(il);
+                c.GotoNext(x => x.MatchCall<RoR2.Console>("get_instance"));
+                var label = c.DefineLabel();
+                c.MarkLabel(label);
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate<Action<MPEventSystem>>((eventSystem) =>
+                {
+                    if (closeWithEscape_.Value == true)
+                    {
+                        PickupPickerPanel[] panels = (PickupPickerPanel[])FindObjectsOfType(typeof(PickupPickerPanel));
+                        if (panels.Length > 0)
+                        {
+                            foreach (var panel in panels)
+                                Destroy(panel.gameObject);
+                        }
+                        else
+                        {
+                            RoR2.Console.instance.SubmitCmd(null, "pause");
+                        }
+                    }
+                    else
+                    {
+                        RoR2.Console.instance.SubmitCmd(null, "pause");
+                    }
+                });
+                c.Emit(OpCodes.Ret);
+                c.GotoPrev(x => x.MatchBrfalse(out _));
+                c.Next.Operand = label;
+                c.Next.OpCode = OpCodes.Brfalse;
+            };
         }
 
         public void CreateSettingsFile()
@@ -43,7 +75,6 @@ namespace HoverStats
             bool closeWithEscape = true;
             string alignment = "br";
 
-            string[] acceptableSizeValues = { "s", "m", "l" };
             string[] acceptableAlignmentValues = { "br", "bl", "tr", "tl", "c" };
 
             configFile_ = new ConfigFile(System.IO.Path.Combine(Paths.ConfigPath, ModGuid + ".cfg"), true);
