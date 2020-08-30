@@ -21,7 +21,7 @@ using R2API.Networking.Interfaces;
 
 namespace HoverStats
 {
-    [BepInPlugin(modGuid, "BetterCommandMenu", "1.0.1")]
+    [BepInPlugin(modGuid, "BetterCommandMenu", "1.3.0")]
     [BepInProcess("Risk of Rain 2.exe")]
     [BepInDependency("ontrigger-ItemStatsMod-1.5.0", BepInDependency.DependencyFlags.SoftDependency)]
     [R2APISubmoduleDependency(nameof(NetworkingAPI))]
@@ -36,7 +36,7 @@ namespace HoverStats
             NetworkingAPI.RegisterMessageType<BuffMessage>();
             // Hooks
             On.RoR2.UI.PickupPickerPanel.SetPickupOptions += SetPickupOptions;
-            On.RoR2.Stage.Start += StageStart;
+            On.RoR2.Run.Start += RunStart;
             IL.RoR2.UI.MPEventSystem.Update += (il) =>
             {
                 ILCursor c = new ILCursor(il);
@@ -65,12 +65,16 @@ namespace HoverStats
             };
         }
 
-        void StageStart(On.RoR2.Stage.orig_Start orig, global::RoR2.Stage self)
+        void RunStart(On.RoR2.Run.orig_Start orig, global::RoR2.Run self)
         {
             orig(self);
             var user = LocalUserManager.GetFirstLocalUser();
-            if(user.cachedMaster.gameObject.GetComponent<BuffChecker>() == null)
-                user.cachedMaster.gameObject.AddComponent<BuffChecker>();
+            user.onMasterChanged += () =>
+            {
+                CharacterMaster master = user.cachedMaster;
+                if (master.gameObject.GetComponent<BuffChecker>() == null)
+                    master.gameObject.AddComponent<BuffChecker>();
+            };
         }
 
         public void SetPickupOptions(On.RoR2.UI.PickupPickerPanel.orig_SetPickupOptions orig, RoR2.UI.PickupPickerPanel self, RoR2.PickupPickerController.Option[] options)

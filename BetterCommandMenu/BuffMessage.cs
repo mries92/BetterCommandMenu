@@ -33,7 +33,7 @@ namespace BetterCommandMenu
             if(_buffIndex != BuffIndex.None)
                 _body.AddTimedBuff(_buffIndex, _buffTime);
             if(_enableShield)
-                _body.healthComponent.AddBarrier((SettingsManager.protectionShieldAmount.Value / 100) * _body.levelMaxHealth);
+                _body.healthComponent.AddBarrier((SettingsManager.protectionShieldAmount.Value / 100.0f) * _body.maxBarrier);
         }
 
         public CharacterBody _body;
