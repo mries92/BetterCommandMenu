@@ -1,10 +1,10 @@
 # BetterCommandMenu
-Various improvements to the RoR2 command and scrapper menus.
+Various quality of life improvements to the RoR2 command and scrapper menus.
 ## Features
 - Shows item names and statistics on hover
 - Displays a counter to show how many of each item you have
 - Allows you to close menus with the escape key
-- Optional protection settings to keep you safe while deciding at the command menu (configurable)
+- Optional protection settings to keep you safe while deciding at the command menu (off by default / configurable)
 ## Configuration
 Creates a config file in `BepInEx/config` on first load. Configurable includes...
 
@@ -15,6 +15,8 @@ Creates a config file in `BepInEx/config` on first load. Configurable includes..
 - Various options to configure protection. Each clients protection settings are honored in multiplayer.
 ## Integrations
 -  [ItemStatsMod](https://thunderstore.io/package/ontrigger/ItemStatsMod/) - Will display the statistics from ItemStatsMod if enabled
+## Notes
+- Servers will honor each clients protection settings. This was so each player could specify an amount they are comfortable with. New players might spend a lot more time in the command menu looking at descriptions / stats.
 ## Changelog
 ### 1.3.0
 - Added protection system with 3 initial protection types.
