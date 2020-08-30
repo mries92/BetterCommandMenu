@@ -15,19 +15,28 @@ using Mono.Cecil.Cil;
 using MonoMod.Utils;
 using MonoMod.Utils.Cil;
 using BetterCommandMenu;
+using UnityEngine.Networking;
+using R2API.Networking;
+using R2API.Networking.Interfaces;
 
 namespace HoverStats
 {
     [BepInPlugin(modGuid, "BetterCommandMenu", "1.0.1")]
     [BepInProcess("Risk of Rain 2.exe")]
     [BepInDependency("ontrigger-ItemStatsMod-1.5.0", BepInDependency.DependencyFlags.SoftDependency)]
+    [R2APISubmoduleDependency(nameof(NetworkingAPI))]
     public class BetterCommandMenu : BaseUnityPlugin
     {
+        public const short buffMessageId = 7296;
         public const string modGuid = "org.mries92.BetterCommandMenu";
         void Awake()
         {
             SettingsManager.Init();
+            // Network messages
+            NetworkingAPI.RegisterMessageType<BuffMessage>();
+            // Hooks
             On.RoR2.UI.PickupPickerPanel.SetPickupOptions += SetPickupOptions;
+            On.RoR2.Stage.Start += StageStart;
             IL.RoR2.UI.MPEventSystem.Update += (il) =>
             {
                 ILCursor c = new ILCursor(il);
@@ -56,6 +65,14 @@ namespace HoverStats
             };
         }
 
+        void StageStart(On.RoR2.Stage.orig_Start orig, global::RoR2.Stage self)
+        {
+            orig(self);
+            var user = LocalUserManager.GetFirstLocalUser();
+            if(user.cachedMaster.gameObject.GetComponent<BuffChecker>() == null)
+                user.cachedMaster.gameObject.AddComponent<BuffChecker>();
+        }
+
         public void SetPickupOptions(On.RoR2.UI.PickupPickerPanel.orig_SetPickupOptions orig, RoR2.UI.PickupPickerPanel self, RoR2.PickupPickerController.Option[] options)
         {            
             orig(self, options);
@@ -72,8 +89,8 @@ namespace HoverStats
                 var edef = EquipmentCatalog.GetEquipmentDef(def.equipmentIndex);
                 int count = 0;
                 
-                // Stack text
-                if(SettingsManager.stackTextEnabled.Value)
+                // Item counters
+                if(SettingsManager.countersEnabled.Value)
                 {
                     GameObject anchorObject = new GameObject("CommandCounter" + i);
                     anchorObject.transform.parent = button.transform;
@@ -152,6 +169,31 @@ namespace HoverStats
                         content.bodyToken = edef.descriptionToken;
                     }
                     button.gameObject.AddComponent<TooltipProvider>().SetContent(content);
+                }
+
+                
+                // Give the player protection
+                if(SettingsManager.protectionEnabled.Value)
+                {
+                    if (body.master.GetComponent<BuffChecker>().CanBuff)
+                    {
+                        BuffMessage message;
+                        switch (SettingsManager.protectionType.Value)
+                        {
+                            case "invincible":
+                                message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.HiddenInvincibility, _buffTime = SettingsManager.protectionTime.Value, _enableShield = false, _shieldAmount = 0 };
+                                message.Send(NetworkDestination.Server);
+                                break;
+                            case "invisible":
+                                message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.Cloak, _buffTime = SettingsManager.protectionTime.Value, _enableShield = false, _shieldAmount = 0 };
+                                message.Send(NetworkDestination.Server);
+                                break;
+                            case "shield":
+                                message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.None, _buffTime = 0, _enableShield = true, _shieldAmount = (SettingsManager.protectionShieldAmount.Value / 100) * body.levelMaxHealth };
+                                message.Send(NetworkDestination.Server);
+                                break;
+                        }
+                    }
                 }
             }
         }

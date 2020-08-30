@@ -4,10 +4,15 @@ Various improvements to the RoR2 command and scrapper menus.
 - Shows item names and statistics on hover
 - Displays a counter to show how many of each item you have
 - Allows you to close menus with the escape key
+- Optional protection settings to keep you safe while deciding at the command menu (configurable)
 ## Configuration
-Creates a config file in `BepInEx/config` on first load. Configurable options include...
-- Font size and alignment
-- Enable/Disable flag for tooltips, item counters, and escape to close
+Creates a config file in `BepInEx/config` on first load. Configurable includes...
+
+- Font size, color, border, and alignment options for item counters
+
+    - ![font examples](ReadmeResources/IconGrid.png)
+- Enable/Disable flags for every feature
+- Various options to configure protection. Each clients protection settings are honored in multiplayer.
 ## Integrations
 -  [ItemStatsMod](https://thunderstore.io/package/ontrigger/ItemStatsMod/) - Will display the statistics from ItemStatsMod if enabled
 ## Changelog
