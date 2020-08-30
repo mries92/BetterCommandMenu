@@ -1,5 +1,17 @@
 # BetterCommandMenu
 Various quality of life improvements to the RoR2 command and scrapper menus.
+
+<table>
+    <tr>
+        <th>Normal</th>
+        <th>With <a href="https://thunderstore.io/package/ontrigger/ItemStatsMod/">ItemStatsMod</a></th>
+    </tr>
+    <tr>
+        <td><img src = "ReadmeResources/NormalTooltip.png" width=400px></td>
+        <td><img src = "ReadmeResources/ItemStatsTooltip.png" width=400px></td>
+    </tr>
+</table>
+
 ## Features
 - Shows item names and statistics on hover
 - Displays a counter to show how many of each item you have
