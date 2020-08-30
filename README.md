@@ -30,7 +30,7 @@ Creates a config file in `BepInEx/config` on first load. Configurable includes..
 ## Integrations
 -  [ItemStatsMod](https://thunderstore.io/package/ontrigger/ItemStatsMod/) - Will display the statistics from ItemStatsMod if enabled
 ## Notes
-- Servers will honor each clients protection settings. This was so each player could specify an amount they are comfortable with. New players might spend a lot more time in the command menu looking at descriptions / stats.
+- Servers will honor each clients protection settings. This is so each player could specify an amount they are comfortable with. New players might spend a lot more time in the command menu looking at descriptions / stats.
 ## Changelog
 ### 1.3.0
 - Added protection system with 3 initial protection types
