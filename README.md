@@ -16,6 +16,9 @@ Creates a config file in `BepInEx/config` on first load. Configurable includes..
 ## Integrations
 -  [ItemStatsMod](https://thunderstore.io/package/ontrigger/ItemStatsMod/) - Will display the statistics from ItemStatsMod if enabled
 ## Changelog
+### 1.3.0
+- Added protection system with 3 initial protection types.
+- Added many more configuration options, and enable/disbale flags for all features
 ### 1.2.0
 - Added abilty to press escape to close menus
 ### 1.1.0
