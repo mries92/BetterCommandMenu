@@ -2,7 +2,7 @@
 using RoR2;
 using System.Runtime.CompilerServices;
 
-namespace HoverStats
+namespace BetterCommandMenu
 {
     static class ItemStatsMod
     {

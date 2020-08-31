@@ -30,10 +30,32 @@ namespace BetterCommandMenu
 
         public void OnReceived()
         {
-            if(_buffIndex != BuffIndex.None)
-                _body.AddTimedBuff(_buffIndex, _buffTime);
-            if(_enableShield)
-                _body.healthComponent.AddBarrier((SettingsManager.protectionShieldAmount.Value / 100.0f) * _body.maxBarrier);
+            bool forceSettings = SettingsManager.forceClientSettings.Value;
+            if(forceSettings)
+            {
+                if(SettingsManager.protectionEnabled.Value)
+                {
+                    if (SettingsManager.protectionType.Value == "shield")
+                    {
+                        _body.healthComponent.AddBarrier((SettingsManager.protectionShieldAmount.Value / 100.0f) * _body.maxBarrier);
+                    }
+                    else
+                    {
+                        _body.AddTimedBuff(SettingsManager.GetProtectionBuffIndex(), SettingsManager.protectionTime.Value);
+                    }
+                }
+            }
+            else
+            {
+                if (SettingsManager.protectionType.Value == "shield")
+                {
+                    _body.healthComponent.AddBarrier((_shieldAmount / 100.0f) * _body.maxBarrier);
+                }
+                else
+                {
+                    _body.AddTimedBuff(_buffIndex, _buffTime);
+                }
+            }
         }
 
         public CharacterBody _body;

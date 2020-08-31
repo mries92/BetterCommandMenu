@@ -16,22 +16,27 @@ Various quality of life improvements to the RoR2 command and scrapper menus.
 - Shows item names and statistics on hover
 - Displays a counter to show how many of each item you have
 - Allows you to close menus with the escape key
-- Optional protection settings to keep you safe while deciding at the command menu (off by default / configurable)
+- Protection settings to keep you safe while deciding at the command menu (off by default / configurable)
+- Option to hide the blur behind the command menu, allowing you to see your health and buffs (off by default)
 ## Installation
 Copy `BetterCommandMenu.dll` to your `BepInEx/plugins` folder. It requires [BepInEx](https://thunderstore.io/package/bbepis/BepInExPack/) and [R2API](https://thunderstore.io/package/tristanmcpherson/R2API/) to be installed. If you have any trouble installing, use the mod manager [r2modman](https://thunderstore.io/package/ebkr/r2modman/).
 ## Configuration
-Creates a config file in `BepInEx/config` on first load. Configurable includes...
+Creates a config file in `BepInEx/config` on first load. Configurable options include...
 
-- Font size, color, border, and alignment options for item counters are all configurable. Here are some examples of what you can do with the configuration.
+- Font size, color, border, and alignment options for item counters. Here are some examples of what you can do.
 
     - ![font examples](ReadmeResources/IconGrid.png)
-- Various options to configure protection. Each clients protection settings are honored in multiplayer
+- Various options to configure protection. By default, each clients settings are honored in multiplayer. This can be changed so clients are forced to use server settings.
+- UI tweaks including hiding the background blur and moving the window
 - Enable/Disable flags for every feature
 ## Integrations
 -  [ItemStatsMod](https://thunderstore.io/package/ontrigger/ItemStatsMod/) - Will display the statistics from ItemStatsMod if enabled
-## Notes
-- Servers will honor each clients protection settings. This is so each player could specify an amount they are comfortable with. New players might spend a lot more time in the command menu looking at descriptions / stats.
 ## Changelog
+### 1.4.0
+- Added support for servers to force client protection settings
+- Fixed shield protection amount
+- Added option to hide counters when you have none of that item
+- Added option to hide blur behind command menu
 ### 1.3.0
 - Added protection system with 3 initial protection types
 - Added many more configuration options, and enable/disbale flags for all features

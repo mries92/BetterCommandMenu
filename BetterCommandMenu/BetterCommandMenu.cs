@@ -18,8 +18,9 @@ using BetterCommandMenu;
 using UnityEngine.Networking;
 using R2API.Networking;
 using R2API.Networking.Interfaces;
+using LeTai.Asset.TranslucentImage;
 
-namespace HoverStats
+namespace BetterCommandMenu
 {
     [BepInPlugin(modGuid, "BetterCommandMenu", "1.3.0")]
     [BepInProcess("Risk of Rain 2.exe")]
@@ -92,7 +93,11 @@ namespace HoverStats
                 var idef = ItemCatalog.GetItemDef(def.itemIndex);
                 var edef = EquipmentCatalog.GetEquipmentDef(def.equipmentIndex);
                 int count = 0;
-                
+
+                // Menu customizations
+                if(SettingsManager.disableBlur.Value)
+                    self.gameObject.GetComponent<TranslucentImage>().enabled = false;
+
                 // Item counters
                 if(SettingsManager.countersEnabled.Value)
                 {
@@ -119,7 +124,10 @@ namespace HoverStats
                     if (idef != null)
                     {
                         count = inv.GetItemCount(def.itemIndex);
-                        text.text = String.Format("<size={0}>{1}</size>{2}", text.fontSize / 2, SettingsManager.prefix.Value, count);
+                        if(SettingsManager.showEmptyStacks.Value)
+                            text.text = String.Format("<size={0}>{1}</size>{2}", text.fontSize / 2, SettingsManager.prefix.Value, count);
+                        else
+                            text.text = (count > 0) ? String.Format("<size={0}>{1}</size>{2}", text.fontSize / 2, SettingsManager.prefix.Value, count) : "";
                     }
 
                     // Item count alignment
@@ -181,22 +189,20 @@ namespace HoverStats
                 {
                     if (body.master.GetComponent<BuffChecker>().CanBuff)
                     {
-                        BuffMessage message;
+                        BuffMessage message = new BuffMessage();
                         switch (SettingsManager.protectionType.Value)
                         {
                             case "invincible":
                                 message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.HiddenInvincibility, _buffTime = SettingsManager.protectionTime.Value, _enableShield = false, _shieldAmount = 0 };
-                                message.Send(NetworkDestination.Server);
                                 break;
                             case "invisible":
                                 message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.Cloak, _buffTime = SettingsManager.protectionTime.Value, _enableShield = false, _shieldAmount = 0 };
-                                message.Send(NetworkDestination.Server);
                                 break;
                             case "shield":
-                                message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.None, _buffTime = 0, _enableShield = true, _shieldAmount = (SettingsManager.protectionShieldAmount.Value / 100) * body.levelMaxHealth };
-                                message.Send(NetworkDestination.Server);
+                                message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.None, _buffTime = 0, _enableShield = true, _shieldAmount = (SettingsManager.protectionShieldAmount.Value / 100) * body.maxBarrier };
                                 break;
                         }
+                        message.Send(NetworkDestination.Server);
                     }
                 }
             }
