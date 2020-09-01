@@ -4,6 +4,7 @@ using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace BetterCommandMenu
@@ -30,11 +31,14 @@ namespace BetterCommandMenu
 
         public void OnReceived()
         {
-            bool forceSettings = SettingsManager.forceClientSettings.Value;
-            if(forceSettings)
+            PlayerCooldownInfo playerInfo = SettingsManager.playerCooldowns.Find(x => x.masterObject == _body.masterObject);
+            float time = Time.time;
+
+            if (SettingsManager.forceClientSettings.Value && SettingsManager.protectionEnabled.Value)
             {
-                if(SettingsManager.protectionEnabled.Value)
+                if (Time.time - playerInfo.lastBuffTime > SettingsManager.protectionCooldown.Value)
                 {
+                    playerInfo.lastBuffTime = time;
                     if (SettingsManager.protectionType.Value == "shield")
                     {
                         _body.healthComponent.AddBarrier((SettingsManager.protectionShieldAmount.Value / 100.0f) * _body.maxBarrier);
@@ -45,15 +49,19 @@ namespace BetterCommandMenu
                     }
                 }
             }
-            else
+            else if(SettingsManager.forceClientSettings.Value == false)
             {
-                if (SettingsManager.protectionType.Value == "shield")
+                if (Time.time - playerInfo.lastBuffTime > playerInfo.cooldownTime)
                 {
-                    _body.healthComponent.AddBarrier((_shieldAmount / 100.0f) * _body.maxBarrier);
-                }
-                else
-                {
-                    _body.AddTimedBuff(_buffIndex, _buffTime);
+                    playerInfo.lastBuffTime = time;
+                    if (_enableShield == true)
+                    {
+                        _body.healthComponent.AddBarrier((_shieldAmount / 100.0f) * _body.maxBarrier);
+                    }
+                    else
+                    {
+                        _body.AddTimedBuff(_buffIndex, _buffTime);
+                    }
                 }
             }
         }

@@ -1,42 +1,58 @@
 # BetterCommandMenu
 Various quality of life improvements to the RoR2 command and scrapper menus.
-
-<table>
-    <tr>
-        <th>Normal</th>
-        <th>With <a href="https://thunderstore.io/package/ontrigger/ItemStatsMod/">ItemStatsMod</a></th>
-    </tr>
-    <tr>
-        <td><img src = "ReadmeResources/NormalTooltip.png" width=400px></td>
-        <td><img src = "ReadmeResources/ItemStatsTooltip.png" width=400px></td>
-    </tr>
-</table>
-
 ## Features
 - Shows item names and statistics on hover
 - Displays a counter to show how many of each item you have
 - Allows you to close menus with the escape key
-- Protection settings to keep you safe while deciding at the command menu (off by default / configurable)
-- Option to hide the blur behind the command menu, allowing you to see your health and buffs (off by default)
+- Protection settings to keep you safe while deciding at the command menu (off by default / configurable / server can force settings)
+- Many optional tweaks to UI appearance
+
+    - Disable the blur effect so you can see your health/buffs
+    - Offset the command menu to position it wherever you want on the screen
+    - Disable any aspect of the command window. Hide the cancel button, background, etc.
+
 ## Installation
 Copy `BetterCommandMenu.dll` to your `BepInEx/plugins` folder. It requires [BepInEx](https://thunderstore.io/package/bbepis/BepInExPack/) and [R2API](https://thunderstore.io/package/tristanmcpherson/R2API/) to be installed. If you have any trouble installing, use the mod manager [r2modman](https://thunderstore.io/package/ebkr/r2modman/).
+
 ## Configuration
 Creates a config file in `BepInEx/config` on first load. Configurable options include...
 
 - Font size, color, border, and alignment options for item counters. Here are some examples of what you can do.
 
     - ![font examples](ReadmeResources/IconGrid.png)
+
 - Various options to configure protection. By default, each clients settings are honored in multiplayer. This can be changed so clients are forced to use server settings.
-- UI tweaks including hiding the background blur and moving the window
+- Various UI settings allowing you to customize many aspects. Here is an example with the command menu moved over the health bar, with the blur/label/cancel button, and other decorations removed.
+
+    - ![customized menu](ReadmeResources/CommandMenuAboveHealth-small.png)
+
 - Enable/Disable flags for every feature
+
 ## Integrations
--  [ItemStatsMod](https://thunderstore.io/package/ontrigger/ItemStatsMod/) - Will display the statistics from ItemStatsMod if enabled
+-  [ItemStatsMod](https://thunderstore.io/package/ontrigger/ItemStatsMod/) - Will display the statistics from ItemStatsMod in tooltips if enabled
+
+    - |Normal|ItemStatsMod|
+      |------|------------|
+      |![normal tooltips](ReadmeResources/NormalTooltip-small.png)|![itemstatsmod](ReadmeResources/ItemStatsTooltip-small.png)|
+
 ## Changelog
 ### 1.4.0
 - Added support for servers to force client protection settings
 - Fixed shield protection amount
 - Added option to hide counters when you have none of that item
-- Added option to hide blur behind command menu
+- Added offset values to item counters so you can correct slight errors in your setup
+- Added options to tweak command menu appearance
+
+    - Remove blur behind command menu
+    - Remove background from command menu
+    - Remove spinning decoration around command menu
+    - Remove the color overlay on the menu indicating the rarity
+    - Remove the cancel button
+    - Remove the 'What is your command?' label
+    - Change position of command window through offsets
+
+- Fixed bug where protection was being applied multiple times
+
 ### 1.3.0
 - Added protection system with 3 initial protection types
 - Added many more configuration options, and enable/disbale flags for all features

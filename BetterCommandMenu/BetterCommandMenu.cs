@@ -19,25 +19,29 @@ using UnityEngine.Networking;
 using R2API.Networking;
 using R2API.Networking.Interfaces;
 using LeTai.Asset.TranslucentImage;
+using System.Collections;
 
 namespace BetterCommandMenu
 {
-    [BepInPlugin(modGuid, "BetterCommandMenu", "1.3.0")]
+    [BepInPlugin(modGuid, "BetterCommandMenu", "1.4.0")]
     [BepInProcess("Risk of Rain 2.exe")]
     [BepInDependency("ontrigger-ItemStatsMod-1.5.0", BepInDependency.DependencyFlags.SoftDependency)]
     [R2APISubmoduleDependency(nameof(NetworkingAPI))]
     public class BetterCommandMenu : BaseUnityPlugin
     {
+        internal static BetterCommandMenu Instance;
         public const short buffMessageId = 7296;
         public const string modGuid = "org.mries92.BetterCommandMenu";
+
         void Awake()
         {
             SettingsManager.Init();
             // Network messages
             NetworkingAPI.RegisterMessageType<BuffMessage>();
+            NetworkingAPI.RegisterMessageType<ClientCooldownMessage>();
             // Hooks
             On.RoR2.UI.PickupPickerPanel.SetPickupOptions += SetPickupOptions;
-            On.RoR2.Run.Start += RunStart;
+            On.RoR2.PlayerCharacterMasterController.OnBodyStart += OnBodyStart;
             IL.RoR2.UI.MPEventSystem.Update += (il) =>
             {
                 ILCursor c = new ILCursor(il);
@@ -64,18 +68,14 @@ namespace BetterCommandMenu
                 c.Next.Operand = label;
                 c.Next.OpCode = OpCodes.Brfalse;
             };
+            Instance = this;
         }
 
-        void RunStart(On.RoR2.Run.orig_Start orig, global::RoR2.Run self)
+        void OnBodyStart(On.RoR2.PlayerCharacterMasterController.orig_OnBodyStart orig, PlayerCharacterMasterController self)
         {
             orig(self);
-            var user = LocalUserManager.GetFirstLocalUser();
-            user.onMasterChanged += () =>
-            {
-                CharacterMaster master = user.cachedMaster;
-                if (master.gameObject.GetComponent<BuffChecker>() == null)
-                    master.gameObject.AddComponent<BuffChecker>();
-            };
+            ClientCooldownMessage message = new ClientCooldownMessage() { masterObject = self.master.gameObject, protectionCooldown = SettingsManager.protectionCooldown.Value };
+            message.Send(NetworkDestination.Server);
         }
 
         public void SetPickupOptions(On.RoR2.UI.PickupPickerPanel.orig_SetPickupOptions orig, RoR2.UI.PickupPickerPanel self, RoR2.PickupPickerController.Option[] options)
@@ -94,12 +94,8 @@ namespace BetterCommandMenu
                 var edef = EquipmentCatalog.GetEquipmentDef(def.equipmentIndex);
                 int count = 0;
 
-                // Menu customizations
-                if(SettingsManager.disableBlur.Value)
-                    self.gameObject.GetComponent<TranslucentImage>().enabled = false;
-
                 // Item counters
-                if(SettingsManager.countersEnabled.Value)
+                if (SettingsManager.countersEnabled.Value)
                 {
                     GameObject anchorObject = new GameObject("CommandCounter" + i);
                     anchorObject.transform.parent = button.transform;
@@ -130,32 +126,35 @@ namespace BetterCommandMenu
                             text.text = (count > 0) ? String.Format("<size={0}>{1}</size>{2}", text.fontSize / 2, SettingsManager.prefix.Value, count) : "";
                     }
 
+                    float offsetX = SettingsManager.counterXOffset.Value;
+                    float offsetY = SettingsManager.counterYOffset.Value;
+
                     // Item count alignment
                     switch (SettingsManager.alignment.Value)
                     {
                         case "br":
                             text.alignment = TextAlignmentOptions.BottomRight;
-                            rectTransform.anchoredPosition = new Vector2(-5, 2);
+                            rectTransform.anchoredPosition = new Vector2(-5 + offsetX, 2 + offsetY);
                             break;
                         case "bl":
                             text.alignment = TextAlignmentOptions.BottomLeft;
-                            rectTransform.anchoredPosition = new Vector2(5, 2);
+                            rectTransform.anchoredPosition = new Vector2(5 + offsetX, 2 + offsetY);
                             break;
                         case "tr":
-                            rectTransform.anchoredPosition = new Vector2(-5, 0);
+                            rectTransform.anchoredPosition = new Vector2(-5 + offsetX, 0 + offsetY);
                             text.alignment = TextAlignmentOptions.TopRight;
                             break;
                         case "tl":
-                            rectTransform.anchoredPosition = new Vector2(5, 0);
+                            rectTransform.anchoredPosition = new Vector2(5 + offsetX, 0 + offsetY);
                             text.alignment = TextAlignmentOptions.TopLeft;
                             break;
                         case "c":
-                            rectTransform.anchoredPosition = new Vector2(0, 0);
+                            rectTransform.anchoredPosition = new Vector2(0 + offsetX, 0 + offsetY);
                             text.alignment = TextAlignmentOptions.Center;
                             break;
                         default:
                             text.alignment = TextAlignmentOptions.BottomRight;
-                            rectTransform.anchoredPosition = new Vector2(-5, 2);
+                            rectTransform.anchoredPosition = new Vector2(-5 + offsetX, 2 + offsetY);
                             break;
                     }
                 }
@@ -182,29 +181,41 @@ namespace BetterCommandMenu
                     }
                     button.gameObject.AddComponent<TooltipProvider>().SetContent(content);
                 }
+            }
 
-                
-                // Give the player protection
-                if(SettingsManager.protectionEnabled.Value)
+            // UI
+            if (!self.gameObject.name.Contains("Scrapper"))
+                self.gameObject.GetComponent<RectTransform>().anchoredPosition += new Vector2(SettingsManager.menuXOffset.Value, SettingsManager.menuYOffset.Value);
+            if (SettingsManager.disableBlur.Value)
+                self.gameObject.GetComponent<TranslucentImage>().enabled = false;
+            if (SettingsManager.disableSpinners.Value)
+                Destroy(self.gameObject.transform.Find("MainPanel").Find("Juice").Find("SpinnyOutlines").gameObject);
+            if (SettingsManager.disableBackground.Value)
+                Destroy(self.gameObject.transform.Find("MainPanel").Find("Juice").Find("BG").gameObject);
+            if (SettingsManager.disableColoredOverlay.Value)
+                Destroy(self.gameObject.transform.Find("MainPanel").Find("Juice").Find("ColoredOverlay").gameObject);
+            if (SettingsManager.disableCancelButton.Value)
+                Destroy(self.gameObject.transform.Find("MainPanel").Find("Juice").Find("CancelButton").gameObject);
+            if (SettingsManager.disableLabel.Value)
+                Destroy(self.gameObject.transform.Find("MainPanel").Find("Juice").Find("Label").gameObject);
+
+            // Give the player protection
+            if (SettingsManager.protectionEnabled.Value)
+            {
+                BuffMessage message = new BuffMessage();
+                switch (SettingsManager.protectionType.Value)
                 {
-                    if (body.master.GetComponent<BuffChecker>().CanBuff)
-                    {
-                        BuffMessage message = new BuffMessage();
-                        switch (SettingsManager.protectionType.Value)
-                        {
-                            case "invincible":
-                                message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.HiddenInvincibility, _buffTime = SettingsManager.protectionTime.Value, _enableShield = false, _shieldAmount = 0 };
-                                break;
-                            case "invisible":
-                                message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.Cloak, _buffTime = SettingsManager.protectionTime.Value, _enableShield = false, _shieldAmount = 0 };
-                                break;
-                            case "shield":
-                                message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.None, _buffTime = 0, _enableShield = true, _shieldAmount = (SettingsManager.protectionShieldAmount.Value / 100) * body.maxBarrier };
-                                break;
-                        }
-                        message.Send(NetworkDestination.Server);
-                    }
+                    case "invincible":
+                        message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.HiddenInvincibility, _buffTime = SettingsManager.protectionTime.Value, _enableShield = false, _shieldAmount = 0 };
+                        break;
+                    case "invisible":
+                        message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.Cloak, _buffTime = SettingsManager.protectionTime.Value, _enableShield = false, _shieldAmount = 0 };
+                        break;
+                    case "shield":
+                        message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.None, _buffTime = 0, _enableShield = true, _shieldAmount = (SettingsManager.protectionShieldAmount.Value / 100) * body.maxBarrier };
+                        break;
                 }
+                message.Send(NetworkDestination.Server);
             }
         }
     }
