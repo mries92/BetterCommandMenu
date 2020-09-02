@@ -1,5 +1,5 @@
 # BetterCommandMenu
-Various quality of life improvements to the RoR2 command and scrapper menus.
+Various quality of life improvements to the command and scrapper menus
 ## Features
 - Shows item names and statistics on hover
 - Displays a counter to show how many of each item you have
@@ -22,7 +22,7 @@ Creates a config file in `BepInEx/config` on first load. Configurable options in
     - ![font examples](ReadmeResources/IconGrid.png)
 
 - Various options to configure protection. By default, each clients settings are honored in multiplayer. This can be changed so clients are forced to use server settings.
-- Various UI settings allowing you to customize many aspects. Here is an example with the command menu moved over the health bar, with the blur/label/cancel button, and other decorations removed.
+- Various UI settings allowing you to customize many aspects. Here is an example with the command menu moved to be over the health bar, with the blur/label/cancel button, and other decorations removed.
 
     - ![customized menu](ReadmeResources/CommandMenuAboveHealth-small.png)
 
