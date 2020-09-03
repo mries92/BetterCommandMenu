@@ -23,25 +23,21 @@ using System.Collections;
 
 namespace BetterCommandMenu
 {
-    [BepInPlugin(modGuid, "BetterCommandMenu", "1.4.0")]
+    [BepInPlugin(modGuid, "BetterCommandMenu", "1.5.0")]
     [BepInProcess("Risk of Rain 2.exe")]
     [BepInDependency("ontrigger-ItemStatsMod-1.5.0", BepInDependency.DependencyFlags.SoftDependency)]
     [R2APISubmoduleDependency(nameof(NetworkingAPI))]
+    [NetworkCompatibility(CompatibilityLevel.NoNeedForSync, VersionStrictness.DifferentModVersionsAreOk)]
     public class BetterCommandMenu : BaseUnityPlugin
     {
         internal static BetterCommandMenu Instance;
-        public const short buffMessageId = 7296;
         public const string modGuid = "org.mries92.BetterCommandMenu";
 
         void Awake()
         {
             SettingsManager.Init();
-            // Network messages
-            NetworkingAPI.RegisterMessageType<BuffMessage>();
-            NetworkingAPI.RegisterMessageType<ClientCooldownMessage>();
             // Hooks
             On.RoR2.UI.PickupPickerPanel.SetPickupOptions += SetPickupOptions;
-            On.RoR2.PlayerCharacterMasterController.OnBodyStart += OnBodyStart;
             IL.RoR2.UI.MPEventSystem.Update += (il) =>
             {
                 ILCursor c = new ILCursor(il);
@@ -70,13 +66,7 @@ namespace BetterCommandMenu
             };
             Instance = this;
         }
-
-        void OnBodyStart(On.RoR2.PlayerCharacterMasterController.orig_OnBodyStart orig, PlayerCharacterMasterController self)
-        {
-            orig(self);
-            ClientCooldownMessage message = new ClientCooldownMessage() { masterObject = self.master.gameObject, protectionCooldown = SettingsManager.protectionCooldown.Value };
-            message.Send(NetworkDestination.Server);
-        }
+        
 
         public void SetPickupOptions(On.RoR2.UI.PickupPickerPanel.orig_SetPickupOptions orig, RoR2.UI.PickupPickerPanel self, RoR2.PickupPickerController.Option[] options)
         {            
@@ -198,25 +188,6 @@ namespace BetterCommandMenu
                 Destroy(self.gameObject.transform.Find("MainPanel").Find("Juice").Find("CancelButton").gameObject);
             if (SettingsManager.disableLabel.Value)
                 Destroy(self.gameObject.transform.Find("MainPanel").Find("Juice").Find("Label").gameObject);
-
-            // Give the player protection
-            if (SettingsManager.protectionEnabled.Value)
-            {
-                BuffMessage message = new BuffMessage();
-                switch (SettingsManager.protectionType.Value)
-                {
-                    case "invincible":
-                        message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.HiddenInvincibility, _buffTime = SettingsManager.protectionTime.Value, _enableShield = false, _shieldAmount = 0 };
-                        break;
-                    case "invisible":
-                        message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.Cloak, _buffTime = SettingsManager.protectionTime.Value, _enableShield = false, _shieldAmount = 0 };
-                        break;
-                    case "shield":
-                        message = new BuffMessage() { _body = body, _buffIndex = BuffIndex.None, _buffTime = 0, _enableShield = true, _shieldAmount = (SettingsManager.protectionShieldAmount.Value / 100) * body.maxBarrier };
-                        break;
-                }
-                message.Send(NetworkDestination.Server);
-            }
         }
     }
 }

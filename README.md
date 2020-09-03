@@ -4,7 +4,6 @@ Various quality of life improvements to the command and scrapper menus
 - Shows item names and statistics on hover
 - Displays a counter to show how many of each item you have
 - Allows you to close menus with the escape key
-- Protection settings to keep you safe while deciding at the command menu (off by default / configurable / server can force settings)
 - Many optional tweaks to UI appearance
 
     - Disable the blur effect so you can see your health/buffs
@@ -21,7 +20,6 @@ Creates a config file in `BepInEx/config` on first load. Configurable options in
 
     - ![font examples](ReadmeResources/IconGrid.png)
 
-- Various options to configure protection. By default, each clients settings are honored in multiplayer. This can be changed so clients are forced to use server settings.
 - Various UI settings allowing you to customize many aspects. Here is an example with the command menu moved to be over the health bar, with the blur/label/cancel button, and other decorations removed.
 
     - ![customized menu](ReadmeResources/CommandMenuAboveHealth-small.png)
@@ -35,7 +33,14 @@ Creates a config file in `BepInEx/config` on first load. Configurable options in
       |------|------------|
       |![normal tooltips](ReadmeResources/NormalTooltip-small.png)|![itemstatsmod](ReadmeResources/ItemStatsTooltip-small.png)|
 
+## Notes
+The protection functionality has been moved to another mod. This was so people could get the UI improvements, while still maintaining the vanilla aspect of the game. It is located [here](https://thunderstore.io/package/mries92/SafeMenus/).
+
 ## Changelog
+### 1.5.0
+- Now marked as a client side mod. Others in the lobby do not need to have it.
+### 1.4.1
+- Split protection functionality to a new mod
 ### 1.4.0
 - Added support for servers to force client protection settings
 - Fixed shield protection amount
