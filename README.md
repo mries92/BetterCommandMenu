@@ -39,6 +39,8 @@ The protection functionality has been moved to another mod. This was so people c
 ## Changelog
 ### 1.5.0
 - Now marked as a client side mod. Others in the lobby do not need to have it.
+- Added option to disable ItemStatsMod info in tooltips (still shows up in inventory)
+- Fixed - If offset is applied, blur is automatically removed.
 ### 1.4.1
 - Split protection functionality to a new mod
 ### 1.4.0

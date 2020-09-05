@@ -158,7 +158,7 @@ namespace BetterCommandMenu
                     {
                         content.titleColor = def.darkColor;
                         content.titleToken = idef.nameToken;
-                        if (ItemStatsMod.enabled)
+                        if (ItemStatsMod.enabled && SettingsManager.showItemStatsMod.Value)
                             content.overrideBodyText = ItemStatsMod.GetDescription(idef, count);
                         else
                             content.bodyToken = idef.descriptionToken;
@@ -176,7 +176,7 @@ namespace BetterCommandMenu
             // UI
             if (!self.gameObject.name.Contains("Scrapper"))
                 self.gameObject.GetComponent<RectTransform>().anchoredPosition += new Vector2(SettingsManager.menuXOffset.Value, SettingsManager.menuYOffset.Value);
-            if (SettingsManager.disableBlur.Value)
+            if (SettingsManager.disableBlur.Value || SettingsManager.menuXOffset.Value != 0 || SettingsManager.menuYOffset.Value != 0)
                 self.gameObject.GetComponent<TranslucentImage>().enabled = false;
             if (SettingsManager.disableSpinners.Value)
                 Destroy(self.gameObject.transform.Find("MainPanel").Find("Juice").Find("SpinnyOutlines").gameObject);

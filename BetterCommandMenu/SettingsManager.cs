@@ -18,7 +18,7 @@ namespace BetterCommandMenu
         public static ConfigEntry<bool> disableBlur, disableBackground, disableSpinners, disableColoredOverlay, disableCancelButton, disableLabel;
         public static ConfigEntry<float> menuXOffset, menuYOffset;
         // Tooltips
-        public static ConfigEntry<bool> tooltipEnabled;
+        public static ConfigEntry<bool> tooltipEnabled, showItemStatsMod;
         // Escape
         public static ConfigEntry<bool> closeWithEscape;
         // Counters
@@ -54,7 +54,9 @@ namespace BetterCommandMenu
 
             // Tooltips
             bool defaultTooltipEnabled = true;
+            bool defaultShowItemStatsMod = true;
             tooltipEnabled = configFile.Bind<bool>("tooltips", "tooltipEnabled", defaultTooltipEnabled, new ConfigDescription("Toggle tooltips on/off"));
+            showItemStatsMod = configFile.Bind<bool>("tooltips", "showItemStatsMod", defaultShowItemStatsMod, new ConfigDescription("Toggle visibility of extra information from ItemStatsMod"));
             
             // Escape
             bool defaultCloseWithEscape = true;
