@@ -20,10 +20,11 @@ using R2API.Networking;
 using R2API.Networking.Interfaces;
 using LeTai.Asset.TranslucentImage;
 using System.Collections;
+using UnityEngine.UI;
 
 namespace BetterCommandMenu
 {
-    [BepInPlugin(modGuid, "BetterCommandMenu", "1.5.0")]
+    [BepInPlugin(modGuid, "BetterCommandMenu", "1.6.0")]
     [BepInProcess("Risk of Rain 2.exe")]
     [BepInDependency("ontrigger-ItemStatsMod-1.5.0", BepInDependency.DependencyFlags.SoftDependency)]
     [R2APISubmoduleDependency(nameof(NetworkingAPI))]
@@ -171,6 +172,11 @@ namespace BetterCommandMenu
                     }
                     button.gameObject.AddComponent<TooltipProvider>().SetContent(content);
                 }
+
+                // UI - set the button properties
+                button.transform.Find("BaseOutline").GetComponent<Image>().color = SettingsManager.buttonBorderColor.Value;
+                button.transform.Find("HoverOutline").GetComponent<Image>().color = SettingsManager.buttonHoverBorderColor.Value;
+                button.GetComponent<Image>().color = SettingsManager.buttonBackgroundColor.Value;
             }
 
             // UI

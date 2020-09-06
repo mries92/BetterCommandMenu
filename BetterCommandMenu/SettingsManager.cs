@@ -17,6 +17,7 @@ namespace BetterCommandMenu
         // UI
         public static ConfigEntry<bool> disableBlur, disableBackground, disableSpinners, disableColoredOverlay, disableCancelButton, disableLabel;
         public static ConfigEntry<float> menuXOffset, menuYOffset;
+        public static ConfigEntry<Color> buttonBorderColor, buttonHoverBorderColor, buttonBackgroundColor;
         // Tooltips
         public static ConfigEntry<bool> tooltipEnabled, showItemStatsMod;
         // Escape
@@ -42,6 +43,9 @@ namespace BetterCommandMenu
             bool defaultDisableColoredOverlay = false;
             bool defaultDisableCancelButton = false;
             bool defaultDisableLabel = false;
+            Color defaultButtonBorderColor = Color.grey;
+            Color defaultButtonHoverBorderColor = new Color(255, 255, 255, 255);
+            Color defaultButtonBackgroundColor = new Color(255, 255, 255, 0); 
             float defaultMenuXOffset = 0, defaultMenuYOffset = 0;
             disableBlur = configFile.Bind<bool>("ui", "disableBlur", defaultDisableBlur, new ConfigDescription("Disable the blur behind the command menu. Allows you to see your current health and buffs."));
             disableBackground = configFile.Bind<bool>("ui", "disableBackground", defaultDisableBackground, new ConfigDescription("Disable the background behind the command menu."));
@@ -51,6 +55,9 @@ namespace BetterCommandMenu
             disableColoredOverlay = configFile.Bind<bool>("ui", "disableColoredOverlay", defaultDisableColoredOverlay, new ConfigDescription("Disables the coloration on the command window representing the rarity. You probably want to remove this as well if you are removing the background."));
             disableCancelButton = configFile.Bind<bool>("ui", "disableCancelButton", defaultDisableCancelButton, new ConfigDescription("Removes the cancel button on command windows. Careful with this one, you defnitely want to have `closeWithEscape` enabled or you won't be able to leave a command menu without picking an item. Will probably check for this in the future.)"));
             disableLabel = configFile.Bind<bool>("ui", "disableLabel", defaultDisableLabel, new ConfigDescription("Hide the text at the top of the command and scrapper menus."));
+            buttonBorderColor = configFile.Bind<Color>("ui", "buttonBorderColor", defaultButtonBorderColor, new ConfigDescription("The color of the button borders in the command menu."));
+            buttonHoverBorderColor = configFile.Bind<Color>("ui", "buttonHoverBorderColor", defaultButtonHoverBorderColor, new ConfigDescription("The color of the button borders in the command menu when you hover over them."));
+            buttonBackgroundColor = configFile.Bind<Color>("ui", "buttonBackgroundColor", defaultButtonBackgroundColor, new ConfigDescription("The color of the button backgrounds in the command menu."));
 
             // Tooltips
             bool defaultTooltipEnabled = true;

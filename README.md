@@ -37,6 +37,9 @@ Creates a config file in `BepInEx/config` on first load. Configurable options in
 The protection functionality has been moved to another mod. This was so people could get the UI improvements, while still maintaining the vanilla aspect of the game. It is located [here](https://thunderstore.io/package/mries92/SafeMenus/).
 
 ## Changelog
+### 1.6.0
+- Added more configuration options for buttons. Can now specify colors for borders and backgrounds.
+- Started adding interop methods so other mods can use the same tooltip / counter settings.
 ### 1.5.0
 - Now marked as a client side mod. Others in the lobby do not need to have it.
 - Added option to disable ItemStatsMod info in tooltips (still shows up in inventory)
