@@ -1,5 +1,5 @@
 # BetterCommandMenu
-Various quality of life improvements to the command and scrapper menus
+Various quality of life improvements to the command and scrapper menus. This is a client side mod and does not need to be installed by the host or the server.
 ## Features
 - Shows item names and statistics on hover
 - Displays a counter to show how many of each item you have
@@ -7,6 +7,7 @@ Various quality of life improvements to the command and scrapper menus
 - Many optional tweaks to UI appearance
 
     - Disable the blur effect so you can see your health/buffs
+    - Change the colors of all buttons (background, hover color, click color)
     - Offset the command menu to position it wherever you want on the screen
     - Disable any aspect of the command window. Hide the cancel button, background, etc.
 
@@ -16,7 +17,7 @@ Copy `BetterCommandMenu.dll` to your `BepInEx/plugins` folder. It requires [BepI
 ## Configuration
 Creates a config file in `BepInEx/config` on first load. Configurable options include...
 
-- Font size, color, border, and alignment options for item counters. Here are some examples of what you can do.
+- Font size, color, border, and alignment options for item counters (colors are stored in an RGBA format). Here are some examples of what you can do.
 
     - ![font examples](ReadmeResources/IconGrid.png)
 
@@ -34,9 +35,13 @@ Creates a config file in `BepInEx/config` on first load. Configurable options in
       |![normal tooltips](ReadmeResources/NormalTooltip-small.png)|![itemstatsmod](ReadmeResources/ItemStatsTooltip-small.png)|
 
 ## Notes
-The protection functionality has been moved to another mod. This was so people could get the UI improvements, while still maintaining the vanilla aspect of the game. It is located [here](https://thunderstore.io/package/mries92/SafeMenus/).
-
+- The protection functionality has been moved to another mod. This was so people could get the UI improvements, while still maintaining the vanilla aspect of the game. It is located [here](https://thunderstore.io/package/mries92/SafeMenus/).
+- Color values in the config are stored as RGBA hex values. For example, a semi-tranparent pure blue would be '0000FFB4'
 ## Changelog
+### 1.6.1
+- Fixed default button colors to match vanilla exactly
+- Doing colors in a less hacky way now
+- Added color options for on press and on hover
 ### 1.6.0
 - Added more configuration options for buttons. Can now specify colors for borders and backgrounds.
 - Started adding interop methods so other mods can use the same tooltip / counter settings.

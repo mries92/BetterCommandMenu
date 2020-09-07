@@ -24,7 +24,7 @@ using UnityEngine.UI;
 
 namespace BetterCommandMenu
 {
-    [BepInPlugin(modGuid, "BetterCommandMenu", "1.6.0")]
+    [BepInPlugin(modGuid, "BetterCommandMenu", "1.6.1")]
     [BepInProcess("Risk of Rain 2.exe")]
     [BepInDependency("ontrigger-ItemStatsMod-1.5.0", BepInDependency.DependencyFlags.SoftDependency)]
     [R2APISubmoduleDependency(nameof(NetworkingAPI))]
@@ -176,7 +176,16 @@ namespace BetterCommandMenu
                 // UI - set the button properties
                 button.transform.Find("BaseOutline").GetComponent<Image>().color = SettingsManager.buttonBorderColor.Value;
                 button.transform.Find("HoverOutline").GetComponent<Image>().color = SettingsManager.buttonHoverBorderColor.Value;
-                button.GetComponent<Image>().color = SettingsManager.buttonBackgroundColor.Value;
+                ColorBlock block = new ColorBlock()
+                {
+                    normalColor = SettingsManager.buttonColor.Value,
+                    highlightedColor = SettingsManager.buttonHoverColor.Value,
+                    disabledColor = SettingsManager.buttonDisabledColor.Value,
+                    pressedColor = SettingsManager.buttonPressedColor.Value,
+                    colorMultiplier = 1,
+                    fadeDuration = 0
+                };
+                button.GetComponent<MPButton>().colors = block;
             }
 
             // UI

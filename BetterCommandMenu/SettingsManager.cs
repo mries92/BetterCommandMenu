@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 namespace BetterCommandMenu
 {
@@ -17,7 +18,7 @@ namespace BetterCommandMenu
         // UI
         public static ConfigEntry<bool> disableBlur, disableBackground, disableSpinners, disableColoredOverlay, disableCancelButton, disableLabel;
         public static ConfigEntry<float> menuXOffset, menuYOffset;
-        public static ConfigEntry<Color> buttonBorderColor, buttonHoverBorderColor, buttonBackgroundColor;
+        public static ConfigEntry<Color> buttonBorderColor, buttonHoverBorderColor, buttonColor, buttonHoverColor, buttonDisabledColor, buttonPressedColor;
         // Tooltips
         public static ConfigEntry<bool> tooltipEnabled, showItemStatsMod;
         // Escape
@@ -30,6 +31,10 @@ namespace BetterCommandMenu
         public static ConfigEntry<Color> fontColor, borderColor;
         public static ConfigEntry<float> counterXOffset, counterYOffset;
         
+        private static Color NormalizeRGBA(int r, int g, int b, int a)
+        {
+            return new Color(r / 255.0f, g / 255.0f, b / 255.0f, a / 255.0f);
+        }
 
         public static void Init()
         {
@@ -43,9 +48,12 @@ namespace BetterCommandMenu
             bool defaultDisableColoredOverlay = false;
             bool defaultDisableCancelButton = false;
             bool defaultDisableLabel = false;
-            Color defaultButtonBorderColor = Color.grey;
-            Color defaultButtonHoverBorderColor = new Color(255, 255, 255, 255);
-            Color defaultButtonBackgroundColor = new Color(255, 255, 255, 0); 
+            Color defaultButtonBorderColor = NormalizeRGBA(255, 255, 255, 73);
+            Color defaultButtonHoverBorderColor = NormalizeRGBA(255, 255, 255, 255);
+            Color defaultButtonColor = NormalizeRGBA(36, 27, 28, 255);
+            Color defaultButtonHoverColor = NormalizeRGBA(115, 51, 51, 255);
+            Color defaultButtonDisabledColor = NormalizeRGBA(19, 16, 16, 255);
+            Color defaultButtonPressedColor = NormalizeRGBA(46, 49, 51, 251);
             float defaultMenuXOffset = 0, defaultMenuYOffset = 0;
             disableBlur = configFile.Bind<bool>("ui", "disableBlur", defaultDisableBlur, new ConfigDescription("Disable the blur behind the command menu. Allows you to see your current health and buffs."));
             disableBackground = configFile.Bind<bool>("ui", "disableBackground", defaultDisableBackground, new ConfigDescription("Disable the background behind the command menu."));
@@ -57,7 +65,11 @@ namespace BetterCommandMenu
             disableLabel = configFile.Bind<bool>("ui", "disableLabel", defaultDisableLabel, new ConfigDescription("Hide the text at the top of the command and scrapper menus."));
             buttonBorderColor = configFile.Bind<Color>("ui", "buttonBorderColor", defaultButtonBorderColor, new ConfigDescription("The color of the button borders in the command menu."));
             buttonHoverBorderColor = configFile.Bind<Color>("ui", "buttonHoverBorderColor", defaultButtonHoverBorderColor, new ConfigDescription("The color of the button borders in the command menu when you hover over them."));
-            buttonBackgroundColor = configFile.Bind<Color>("ui", "buttonBackgroundColor", defaultButtonBackgroundColor, new ConfigDescription("The color of the button backgrounds in the command menu."));
+            buttonColor = configFile.Bind<Color>("ui", "buttonColor", defaultButtonColor, new ConfigDescription("The color of the button backgrounds in the command menu."));
+            buttonHoverColor = configFile.Bind<Color>("ui", "buttonHoverColor", defaultButtonHoverColor, new ConfigDescription("The color of buttons you hover over in the command menu."));
+            buttonDisabledColor = configFile.Bind<Color>("ui", "buttonDisabledColor", defaultButtonDisabledColor, new ConfigDescription("The color of the button backgrounds for items you do not have unlocked."));
+            buttonPressedColor = configFile.Bind<Color>("ui", "buttonPressedColor", defaultButtonPressedColor, new ConfigDescription("The color of the button backgrounds when you click an entry."));
+
 
             // Tooltips
             bool defaultTooltipEnabled = true;
