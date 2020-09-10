@@ -33,6 +33,7 @@ namespace BetterCommandMenu
     {
         internal static BetterCommandMenu Instance;
         public const string modGuid = "org.mries92.BetterCommandMenu";
+        private bool itemStatsModEnabled;
 
         void Awake()
         {
@@ -66,6 +67,7 @@ namespace BetterCommandMenu
                 c.Next.OpCode = OpCodes.Brfalse;
             };
             Instance = this;
+            itemStatsModEnabled = ItemStatsMod.enabled;
         }
         
 
@@ -159,8 +161,8 @@ namespace BetterCommandMenu
                     {
                         content.titleColor = def.darkColor;
                         content.titleToken = idef.nameToken;
-                        if (ItemStatsMod.enabled && SettingsManager.showItemStatsMod.Value)
-                            content.overrideBodyText = ItemStatsMod.GetDescription(idef, count);
+                        if (itemStatsModEnabled && SettingsManager.showItemStatsMod.Value)                      
+                                content.overrideBodyText = ItemStatsMod.GetDescription(idef, count, body.master);
                         else
                             content.bodyToken = idef.descriptionToken;
                     }

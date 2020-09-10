@@ -38,6 +38,8 @@ Creates a config file in `BepInEx/config` on first load. Configurable options in
 - The protection functionality has been moved to another mod. This was so people could get the UI improvements, while still maintaining the vanilla aspect of the game. It is located [here](https://thunderstore.io/package/mries92/SafeMenus/).
 - Color values in the config are stored as RGBA hex values. For example, a semi-tranparent pure blue would be '0000FFB4'
 ## Changelog
+### 1.6.2
+- Fixed for ItemStatsMod 2.0
 ### 1.6.1
 - Fixed default button colors to match vanilla exactly
 - Doing colors in a less hacky way now
